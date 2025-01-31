@@ -2,6 +2,7 @@
 
 ChestState::ChestState(Player* player) : State(player) {
     this->background.load("C:/Users/Public/of_v20240930_msys2_mingw64_release/apps/myApps/minecraft/bin/data/images/states/chest.png");
+    // Create the chest inventory, which is an ItemContainer array of 27.
     const int VERTICAL_OFFSET = 72;
     const int HORIZONTAL_OFFSET = 32;
     const int DISTANCE_BETWEEN_CONTAINERS = 72;
@@ -18,7 +19,7 @@ ChestState::ChestState(Player* player) : State(player) {
 
 void ChestState::addItem(Item itm, int count) {
     int i = 0;
-    while (!this->chestInventory[i].isEmpty()) {i++;}
+    while (!this->chestInventory[i].isEmpty() && i <= 26) {i++;}
     this->chestInventory[i].setCurrentItem(itm);
     this->chestInventory[i].setItemCount(count);
 }
@@ -28,10 +29,6 @@ void ChestState::addItem(Item itm, int count, int slot){
     this->chestInventory[slot].setCurrentItem(itm);
     this->chestInventory[slot].setItemCount(count);
 };
-
-void ChestState::update(){
-    // Chest state doesn't need an update function, but we define it so that C++ doesn't blow up
-};
 void ChestState::draw(){
     background.draw(0,0);
     for (auto slot : this->chestInventory) {
@@ -40,30 +37,13 @@ void ChestState::draw(){
     this->getPlayer()->draw();
 };
 void ChestState::mouseMoved(int x, int y){
-    for (auto& slot : this->getPlayer()->getInventory()) {
-        slot.mouseEntered(x,y);
-    }
-    for (auto& slot : this->chestInventory) {
-        slot.mouseEntered(x,y);
-    }
-    getPlayer()->getCursorContainer().setPos(x-32,y-32);
+    State::mouseMoved(x,y);
+    // Check if the mouse enters any of the state's containers
+    for (auto& slot : this->chestInventory) { slot.mouseEntered(x,y); }
 };
 void ChestState::mousePressed(int x, int y, int button){
-    if (button == 0) {
-        for (auto& slot : this->chestInventory) {
-            slot.leftMousePressed(x,y,getPlayer()->getCursorContainer());
-        }
-        for (auto& slot : this->getPlayer()->getInventory()) {
-            slot.leftMousePressed(x,y,getPlayer()->getCursorContainer());
-        }
-    }
-    if (button == 2) {
-        for (auto& slot : this->chestInventory) {
-            slot.rightMousePressed(x,y,getPlayer()->getCursorContainer());
-        }
-         for (auto& slot : this->getPlayer()->getInventory()) {
-            slot.rightMousePressed(x,y,getPlayer()->getCursorContainer());
-        }
-    }
+    State::mousePressed(x,y,button);
+    if (button == 0) for (auto& slot : this->chestInventory) { slot.leftMouseClicked(x,y,getPlayer()->getCursorContainer()); }
+    if (button == 2) for (auto& slot : this->chestInventory) { slot.rightMouseClicked(x,y,getPlayer()->getCursorContainer()); }
 };
 void ChestState::keyPressed(int key) {}

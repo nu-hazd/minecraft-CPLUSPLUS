@@ -1,135 +1,93 @@
 #include "ItemContainer.h"
-// Inventory, chest and crafting table containers use this constructor
-
-ItemContainer::ItemContainer(Item item, int pX, int pY, bool eO, bool fO) {
-    this->currentItem = item;
-    this->currentItemCount = 1;
-    this->extractOnly = eO;
-    this->fuelOnly = fO;
-    this->mouseHovering = false;
-
-    this->hoverHighlighter.load("images/sprites/containerHover.png");;
-    this->collider.setX(pX);
-    this->collider.setY(pY);
-    // Each container is 64x64 pixels
-    this->collider.height = 64;
-    this->collider.width = 64;
-    this->mouseHovering = false;
-    
-} 
 ItemContainer::ItemContainer(int pX, int pY) {
     this->currentItem = Item();
     this->currentItemCount = 0;
-    this->extractOnly = false;
-    this->fuelOnly = false;
-    this->mouseHovering = false;
     
-    this->hoverHighlighter.load("images/sprites/containerHover.png");
-    this->collider.setX(pX);
-    this->collider.setY(pY);
-    // Each container is 64x64 pixels
+    // Each container is 64x64 pixels.
     this->collider.height = 64;
     this->collider.width = 64;
+    this->collider.setX(pX);
+    this->collider.setY(pY);
+    this->mouseHovering = false;
+    this->hoverHighlighter.load("images/sprites/containerHover.png");
 }
 
-void ItemContainer::mouseEntered(int x, int y) {
-    if(this->collider.inside(x,y)) {this->mouseHovering = true; } else {this->mouseHovering = false; }
+// Inventory = target container
 
-}
-void ItemContainer::leftMousePressed(int x, int y, ItemContainer& playerCursor) {
-    if (isMouseHovering()) { leftWasPressed(playerCursor);}
-};
-void ItemContainer::rightMousePressed(int x, int y, ItemContainer& playerCursor) {
-    if (isMouseHovering()) { rightWasPressed(playerCursor);}
-};
-void ItemContainer::leftWasPressed(ItemContainer& playerCursor) {
+void ItemContainer::leftSwapWith(ItemContainer& playerContainer) {
     //  The two interacting containers are empty. Do nothing.
-    if (this->isEmpty() && playerCursor.isEmpty()) {
-        return;
-    }
+    if (this->isEmpty() && playerContainer.isEmpty()) return;
     //  The items are the same, add them.
-    if ((this->getCurrentItem() == playerCursor.getCurrentItem())) {
+    if ((this->getCurrentItem() == playerContainer.getCurrentItem())) {
             // One of the containers is maxed. Swap the counts.
-            if (this->getCurrentItem().getMaxStack() == this->getItemCount() || playerCursor.getCurrentItem().getMaxStack() == playerCursor.getItemCount()) {
+            if (this->isMaxed() || playerContainer.isMaxed()) {
+                // Store one of the counts as a reference.
                 int refCount = this->getItemCount();
-                this->setItemCount(playerCursor.getItemCount());
-                playerCursor.setItemCount(refCount);
+                // Swap them.
+                this->setItemCount(playerContainer.getItemCount());
+                playerContainer.setItemCount(refCount);
             }else {
-                int newItemCount = playerCursor.getItemCount() + this->getItemCount();
+                // Add player's item count to the inventory container's count 
+                int newItemCount = playerContainer.getItemCount() + this->getItemCount();
+                // If it exceeds the stack limit, give the player container the rest.
                 if (newItemCount > this->getCurrentItem().getMaxStack()) {
-                    int residue = newItemCount - this->getCurrentItem().getMaxStack();
+                    int residue = playerContainer.getItemCount() + this->getItemCount() - this->getCurrentItem().getMaxStack();
                     newItemCount = this->getCurrentItem().getMaxStack();
                     this->setItemCount(newItemCount);
-                    playerCursor.setItemCount(residue);
+                    playerContainer.setItemCount(residue);
                 }else {
                     this->setItemCount(newItemCount);
-                    playerCursor.empty();
+                    playerContainer.empty();
                 }
             }
     }
     // The items are different, swap the contents of the containers.
     else {
+        // Store an item and count reference refence.
         Item itmRef = this->getCurrentItem();
         int countRef = this->getItemCount();
-        this->setCurrentItem(playerCursor.getCurrentItem());
-        this->setItemCount(playerCursor.getItemCount());
-        playerCursor.setCurrentItem(itmRef);
-        playerCursor.setItemCount(countRef);
+        // Swap both values.
+        this->setCurrentItem(playerContainer.getCurrentItem());
+        this->setItemCount(playerContainer.getItemCount());
+        playerContainer.setCurrentItem(itmRef);
+        playerContainer.setItemCount(countRef);
     }
-    
-    };
-
-
-void ItemContainer::rightWasPressed(ItemContainer& playerCursor) {
-    // Player container is empty
-    if (playerCursor.isEmpty()) {
-        if (this->isEmpty()) {
-            return;
-        }
-        // If it's only one, simply pick it up
-        if (this->getItemCount() == 1) {
-            leftWasPressed(playerCursor);
-        }
-        // If its more than one, pick up half of the items
+};
+void ItemContainer::rightSwapWith(ItemContainer& playerContainer) {
+    if (playerContainer.isEmpty()) {
+        // If the inventory container is empty, do nothing.
+        if (this->isEmpty()) return;
+        // If it's only one, simply pick it up.
+        if (this->getItemCount() == 1) rightSwapWith(playerContainer);
+        // It's more than one, pick up half of the items.
         else {
             int half = this->getItemCount()/2;
             this->setItemCount(this->getItemCount()-half);
-            playerCursor.setItemCount(half);
-            playerCursor.setCurrentItem(this->getCurrentItem());
+            playerContainer.setItemCount(half);
+            playerContainer.setCurrentItem(this->getCurrentItem());
         }
-    // The player container is not empty
     }else {
-        // If the target container is empty, place one item
+        // If the inventory container is empty, place one item.
         if (this->isEmpty()) {
             this->setItemCount(1);
-            this->setCurrentItem(playerCursor.getCurrentItem());
-            // Deduct one from the player container. Check if it has no more items.
-            playerCursor.setItemCount(playerCursor.getItemCount()-1);
-            if (playerCursor.getItemCount()==0) {
-                playerCursor.empty();
-            }
+            this->setCurrentItem(playerContainer.getCurrentItem());
+            // Deduct one from the player container.
+            playerContainer.deductOne();
         }
         // If the target container has the same item as the player container, add one to it.
-        else if (this->getCurrentItem() == playerCursor.getCurrentItem()) {
-            // Check if adding one exceeds the items max stack size.
-            if (this->getItemCount() + 1 <= this->getCurrentItem().getMaxStack()) {
+        else if (this->getCurrentItem() == playerContainer.getCurrentItem()) {
+            // Check if adding one doesn't exceeds the items max stack size.
+            if (!this->isMaxedAfter(1)) {
                 this->setItemCount(this->getItemCount() + 1);
-            }else { return; }
-            // Deduct one from the player container. Check if it has no more items.
-            playerCursor.setItemCount(playerCursor.getItemCount()-1);
-            if (playerCursor.getItemCount()==0) {
-                playerCursor.empty();
+                // Deduct one from the player container. 
+                playerContainer.deductOne();
             }
         }
     }
 }
-
-void ItemContainer::empty() {
-    this->currentItem.setToAir();
-    this->currentItemCount = 0;
-}
 void ItemContainer::draw() {
     if (isMouseHovering()) { 
+        // Draw the 
         this->hoverHighlighter.draw(this->collider.getMinX(),this->collider.getMinY());
         if (this->getCurrentItem().getItemNumber() != 0) { ofDrawBitmapStringHighlight(this->currentItem.getName(), this->collider.getMinX(), this->collider.getMinY()-10,ofColor::darkBlue);}
     }

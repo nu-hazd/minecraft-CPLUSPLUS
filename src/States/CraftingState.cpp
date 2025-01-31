@@ -4,6 +4,7 @@ CraftingState::CraftingState(Player* player, ItemHandler* instantce) : State(pla
     this->instantiator = instantce;
     this->background.load("images/states/crafting.png");
     this->resultContainer = ItemContainer(496,139);
+    // Offsets were obtained via MsPaint. Check the lower left corner of the window for the x, y coords. Also try Piskel.
     const int VERTICAL_OFFSET = 68;
     const int HORIZONTAL_OFFSET = 120;
     const int DISTANCE_BETWEEN_CONTAINERS = 72;
@@ -11,37 +12,39 @@ CraftingState::CraftingState(Player* player, ItemHandler* instantce) : State(pla
     const int COLS = 3;
     for (int y = VERTICAL_OFFSET; y < VERTICAL_OFFSET + (DISTANCE_BETWEEN_CONTAINERS*ROWS); y = y + DISTANCE_BETWEEN_CONTAINERS) {
         for (int x = HORIZONTAL_OFFSET; x < HORIZONTAL_OFFSET + (DISTANCE_BETWEEN_CONTAINERS*COLS); x = x + DISTANCE_BETWEEN_CONTAINERS) {
+            // Create an empty container at x, y
             this->craftingGrid.push_back(ItemContainer(x,y));
         }
     }
-
 };
 
 void CraftingState::craft() {
     vector<int> translatedGrid;
+    // Interpret the ItemContainer grid as an array of integers
     for (ItemContainer container : craftingGrid) {
         translatedGrid.push_back(container.getCurrentItem().getItemNumber());
     }
-    gridStandarizer(translatedGrid);
+    // Remove any empty rows/columns
+    standarizeGrid(translatedGrid);
     pair<Item, int> result = getItemFromRecipie(translatedGrid);
+    Item resultItem = result.first;
+    int resultItemCount = result.second;
+    if (resultItemCount == 0) return; // No recipie was found, do nothing.
     if (resultContainer.isEmpty())
         {
-            resultContainer.setCurrentItem(result.first);
-            resultContainer.setItemCount(result.second);
+            resultContainer.setCurrentItem(resultItem);
+            resultContainer.setItemCount(resultItemCount);
         }
-    else if (resultContainer.getCurrentItem() == result.first && resultContainer.getItemCount() + result.second < result.first.getMaxStack()) 
+    else if (resultContainer.getCurrentItem() == resultItem && !resultContainer.isMaxedAfter(resultItemCount))
         {
-            resultContainer.setCurrentItem(result.first);
-            resultContainer.setItemCount(resultContainer.getItemCount()+result.second);
+            resultContainer.setCurrentItem(resultItem);
+            resultContainer.setItemCount(resultContainer.getItemCount()+resultItemCount);
         }
-    else { return; } 
-    for (ItemContainer& ingredient : craftingGrid) {
-        ingredient.setItemCount(ingredient.getItemCount()-1);
-        if (ingredient.getItemCount()==0) { ingredient.empty();}
-    }
+    // The result container is either full or it has a different crafted item already, do nothing. 
+    else {return;} 
+    // Deduct one from all the ingredients
+    for (ItemContainer& ingredient : craftingGrid) { ingredient.deductOne(); }
 }
-
-void CraftingState::update() {};
 
 void CraftingState::draw() {
     background.draw(0,0);
@@ -52,49 +55,26 @@ void CraftingState::draw() {
     this->getPlayer()->draw();
 };
 void CraftingState::mouseMoved(int x, int y) {
-    for (auto& slot : this->getPlayer()->getInventory()) {
-        slot.mouseEntered(x,y);
-    }
-    for (auto& slot : this->craftingGrid) {
-        slot.mouseEntered(x,y);
-    }
+    State::mouseMoved(x,y);
+    // Check if the mouse enters any of the state's containers
+    for (auto& slot : this->craftingGrid) { slot.mouseEntered(x,y); }
     this->resultContainer.mouseEntered(x,y);
-    getPlayer()->getCursorContainer().setPos(x-32,y-32);
 };
 void CraftingState::mousePressed(int x, int y, int button) {
+    State::mousePressed(x,y,button);
     if (button == 0) {
-        for (auto& slot : this->craftingGrid) {
-            slot.leftMousePressed(x,y,getPlayer()->getCursorContainer());
-        }
-        for (auto& slot : this->getPlayer()->getInventory()) {
-            slot.leftMousePressed(x,y,getPlayer()->getCursorContainer());
-        }
-        if (this->getPlayer()->getCursorContainer().isEmpty()) {
-            this->resultContainer.leftMousePressed(x,y,this->getPlayer()->getCursorContainer());
-        }
+        for (auto& slot : this->craftingGrid) { slot.leftMouseClicked(x,y,getPlayer()->getCursorContainer()); }
+        // Only allow the player to left click if thier mouse(container) isn't holding an item already.
+        if (this->getPlayer()->getCursorContainer().isEmpty()) this->resultContainer.leftMouseClicked(x,y,this->getPlayer()->getCursorContainer());
     }
     if (button == 2) {
-        for (auto& slot : this->craftingGrid) {
-            slot.rightMousePressed(x,y,getPlayer()->getCursorContainer());
-        }
-        for (auto& slot : this->getPlayer()->getInventory()) {
-            slot.rightMousePressed(x,y,getPlayer()->getCursorContainer());
-        }
-        }
-        if (this->getPlayer()->getCursorContainer().isEmpty()) {
-            this->resultContainer.rightMousePressed(x,y,this->getPlayer()->getCursorContainer());
+        for (auto& slot : this->craftingGrid) { slot.rightMouseClicked(x,y,getPlayer()->getCursorContainer()); }
+        // Only allow the player to right click if thier mouse(container) isn't holding an item already.
+        if (this->getPlayer()->getCursorContainer().isEmpty()) this->resultContainer.rightMouseClicked(x,y,this->getPlayer()->getCursorContainer());
     }
 };
-void CraftingState::keyPressed(int key) {
-    if (key == 'C' || key == 'c') {
-        craft();
-    }
-}
 
-void CraftingState::gridStandarizer(vector<int>& grid) {
-    /*
-        Helper function that snaps the grid to the upper-leftt corner.
-    // */
+void CraftingState::standarizeGrid(vector<int>& grid) {
     for (int i = 0; i < 2; i++) {
         // Vertical line checker
         // If theres is a line, move columns left. Do this a maximum of two times.
@@ -125,20 +105,16 @@ void CraftingState::gridStandarizer(vector<int>& grid) {
                 grid[8] = 0;
         } 
     }
-
-
 }
 
-
-
 pair<Item, int> CraftingState::getItemFromRecipie(vector<int> grid) {
-    // A pair holds two
+    // A pair holds two types
     pair<Item, int> result;
     // Initialize the recipie to Item() and 0, indicating that no recipie has yet been found.
     result.first = Item();
     result.second = 0;
 
-    /* We could, and should, have used a map. But lets keep it simple. The syntax is as follows:
+    /*The syntax is as follows:
         if (grid == vector<int>
                 {#, #, #,
                  #, #, #,
@@ -148,54 +124,230 @@ pair<Item, int> CraftingState::getItemFromRecipie(vector<int> grid) {
             result.second = itemAmount;
         }
        Make sure to align the recipie to the upper left corner of the array.
+       Example {#, #, #,
+                 #, #, #,
+                 #, #, 1}
+                  --->
+                {1, #, #,
+                 #, #, #,
+                 #, #, #}
     */
-        if (grid == vector<int>
+        if (grid == vector<int> // planks
                 {2, 0, 0,
-                 2, 0, 0,
+                 0, 0, 0,
                  0, 0, 0}
             ) {
-            result.first = instantiator->getItemFromNumber(6);
+            result.first = instantiator->getItemFromNumber(3);
             result.second = 4;
         }
-        if (grid == vector<int>
-                {2, 2, 2,
-                 0, 6, 0,
-                 0, 6, 0}
+        if (grid == vector<int> // sticks
+                {3, 0, 0,
+                 3, 0, 0,
+                 0, 0, 0}
+            ) {
+            result.first = instantiator->getItemFromNumber(4);
+            result.second = 4;
+        }
+        if (grid == vector<int> // Wooden pickaxe
+                {3, 3, 3,
+                 0, 4, 0,
+                 0, 4, 0}
+            ) {
+            result.first = instantiator->getItemFromNumber(5);
+            result.second = 1;
+        }
+        if (grid == vector<int> // stone pickaxe
+                {30, 30, 30,
+                 0, 4, 0,
+                 0, 4, 0}
+            ) {
+            result.first = instantiator->getItemFromNumber(6);
+            result.second = 1;
+        }
+        if (grid == vector<int> // Iron pickaxe
+                {34, 34, 34,
+                 0, 4, 0,
+                 0, 4, 0}
             ) {
             result.first = instantiator->getItemFromNumber(7);
             result.second = 1;
         }
-        if (grid == vector<int>
-                {2, 0, 0,
-                 6, 0, 0,
-                 6, 0, 0}
+        if (grid == vector<int> // Diamond pickaxe
+                {36, 36, 36,
+                 0, 4, 0,
+                 0, 4, 0}
+            ) {
+            result.first = instantiator->getItemFromNumber(8);
+            result.second = 1;
+        }
+        if (grid == vector<int> // Gold pickaxe
+                {35, 35, 35,
+                 0, 4, 0,
+                 0, 4, 0}
+            ) {
+            result.first = instantiator->getItemFromNumber(9);
+            result.second = 1;
+        }
+        if (grid == vector<int> // Wooden Shovel
+                {3, 0, 0,
+                4, 0, 0,
+                4, 0, 0}
             ) {
             result.first = instantiator->getItemFromNumber(10);
             result.second = 1;
         }
-         if (grid == vector<int>
-                {1, 0, 0,
-                 0, 0, 0,
-                 0, 0, 0}
+        if (grid == vector<int> // Stone Shovel
+                {30, 0, 0,
+                4, 0, 0,
+                4, 0, 0}
             ) {
-            result.first = instantiator->getItemFromNumber(2);
-            result.second = 4;
+            result.first = instantiator->getItemFromNumber(11);
+            result.second = 1;
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        if (grid == vector<int> // Iron Shovel
+                {34, 0, 0,
+                4, 0, 0,
+                4, 0, 0}
+            ) {
+            result.first = instantiator->getItemFromNumber(12);
+            result.second = 1;
+        }
+        if (grid == vector<int> // Diamond Shovel
+                {36, 0, 0,
+                4, 0, 0,
+                4, 0, 0}
+            ) {
+            result.first = instantiator->getItemFromNumber(13);
+            result.second = 1;
+        }
+        if (grid == vector<int>  // Gold Shovel
+                {35, 0, 0,
+                4, 0, 0,
+                4, 0, 0}
+            ) {
+            result.first = instantiator->getItemFromNumber(14);
+            result.second = 1;
+        }
+        if (grid == vector<int> // Wooden Sword
+                {3, 0, 0,
+                3, 0, 0,
+                4, 0, 0}
+            ) {
+            result.first = instantiator->getItemFromNumber(15);
+            result.second = 1;
+        }
+        if (grid == vector<int> // Stone Sword
+                {30, 0, 0,
+                30, 0, 0,
+                4, 0, 0}
+            ) {
+            result.first = instantiator->getItemFromNumber(16);
+            result.second = 1;
+        }
+        if (grid == vector<int> // Iron Sword
+                {34, 0, 0,
+                34, 0, 0,
+                4, 0, 0}
+            ) {
+            result.first = instantiator->getItemFromNumber(17);
+            result.second = 1;
+        }
+        if (grid == vector<int>  // Diamond Sword
+                {36, 0, 0,
+                36, 0, 0,
+                4, 0, 0}
+            ) {
+            result.first = instantiator->getItemFromNumber(18);
+            result.second = 1;
+        }
+        if (grid == vector<int> // Gold Sword
+                {35, 0, 0,
+                35, 0, 0,
+                4, 0, 0}
+            ) {
+            result.first = instantiator->getItemFromNumber(19);
+            result.second = 1;
+        }
+        if (grid == vector<int> // Wooden Axe
+                {3, 3, 0,
+                3, 4, 0,
+                0, 4, 0}
+            ) {
+            result.first = instantiator->getItemFromNumber(20);
+            result.second = 1;
+        }
+        if (grid == vector<int> // Stone Axe
+                {30, 30, 0,
+                30, 4, 0,
+                0, 4, 0}
+            ) {
+            result.first = instantiator->getItemFromNumber(21);
+            result.second = 1;
+        }
+        if (grid == vector<int> // Iron Axe
+                {34, 34, 0,
+                34, 4, 0,
+                0, 4, 0}
+            ) {
+            result.first = instantiator->getItemFromNumber(22);
+            result.second = 1;
+        }
+        if (grid == vector<int> // Diamond Axe
+                {36, 36, 0,
+                36, 4, 0,
+                0, 4, 0}
+            ) {
+            result.first = instantiator->getItemFromNumber(23);
+            result.second = 1;
+        }
+        if (grid == vector<int>  // Gold Axe
+                {35, 35, 0,
+                35, 4, 0,
+                0, 4, 0}
+            ) {
+            result.first = instantiator->getItemFromNumber(24);
+            result.second = 1;
+        }
+        if (grid == vector<int> // Wooden Hoe
+                {3, 3, 0,
+                0, 4, 0,
+                0, 4, 0}
+            ) {
+            result.first = instantiator->getItemFromNumber(25);
+            result.second = 1;
+        }
+        if (grid == vector<int> // Stone Hoe
+                {30, 30, 0,
+                0, 4, 0,
+                0, 4, 0}
+            ) {
+            result.first = instantiator->getItemFromNumber(26);
+            result.second = 1;
+        }
+        if (grid == vector<int> // Iron Hoe
+                {34, 34, 0,
+                0, 4, 0,
+                0, 4, 0}
+            ) {
+            result.first = instantiator->getItemFromNumber(27);
+            result.second = 1;
+        }
+        if (grid == vector<int> // Diamond Hoe
+                {36, 63, 0,
+                0, 4, 0,
+                0, 4, 0}
+            ) {
+            result.first = instantiator->getItemFromNumber(28);
+            result.second = 1;
+        }
+        if (grid == vector<int> // Gold Hoe
+                {35, 35, 0,
+                0, 4, 0,
+                0, 4, 0}
+            ) {
+            result.first = instantiator->getItemFromNumber(29);
+            result.second = 1;
+        }
         return result;       
 }
 

@@ -1,6 +1,5 @@
 #pragma once
 #include "ofMain.h" 
-#include <string>
 
 
 class Item {
@@ -11,14 +10,14 @@ class Item {
         ofImage sprite;
         string name;
     public:
-        /** 
+        /**
         * Constructs an Item object. All items must have a unique item number.
-        * @param iN Unique item identifier. Conventionally item Number is greater than 0.
+        * @param iN Unique item identifier. Conventionally itemNumber is greater than 0.
         * @param mS Maximun amount of an item that any ItemContainer can hold. Conventionally the stack sizes are 1, 16 and 64.
         * @param fL How much the item burns inside a furnace. One fuel will equal one smelted item. Most items are 0.
         * @param spr Sprite, or image, that will be called in the draw() method. In order to fit in the contaienr, the sprite must be 64x64 pixels.
         * @param iNa Display name for the item.
-        **/
+        */
         Item(int iN, int mS, int fL, ofImage spr, string iNa) {
             this->itemNumber = iN;
             this->maxStack = mS;
@@ -27,9 +26,7 @@ class Item {
             this->name = iNa;
         }
         /** Default constructor. Returns an air (empty) item. */
-        Item() {
-            this->setToAir();
-        } 
+        Item() { this->setToAir(); } 
         // Getters
         int getItemNumber() { return this->itemNumber; }
         int getMaxStack() { return this->maxStack; } 
@@ -38,6 +35,7 @@ class Item {
         string getName() { return this->name; }
 
         // Setters
+        //* Makes any given item air. In other words, it makes it empty. */
         void setToAir() {
             this->itemNumber = 0;
             this->maxStack = 1;
@@ -49,11 +47,7 @@ class Item {
             this->name = "air";
         }
 
-        // Useful operators for direct comparison of items.
-        bool operator==(const Item& other) const {
-            return this->itemNumber == other.itemNumber;
-        }
-        bool operator!=(const Item& other) const {
-            return this->itemNumber != other.itemNumber;
-        }
+        // Useful operators that enable direct comparison of items.
+        bool operator==(const Item& other) const { return this->itemNumber == other.itemNumber; }
+        bool operator!=(const Item& other) const { return this->itemNumber != other.itemNumber; }
 };

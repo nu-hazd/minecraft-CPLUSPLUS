@@ -11,27 +11,28 @@ void ofApp::setup() {
     this->currentState = chestState;
 }
 
-//--------------------------------------------------------------
-void ofApp::update() {
-    currentState->update();
-}
-
-//--------------------------------------------------------------
-void ofApp::draw() {
-    currentState->draw();
-}
-
-
-//--------------------------------------------------------------
-void ofApp::mouseMoved(int x, int y) {
-    currentState->mouseMoved(x,y);
-    
-}
-
-//--------------------------------------------------------------
+/**
+ * Handles mouse press events and manages state transitions.
+ * 
+ * This method is called whenever a mouse button is pressed. It delegates the event to the current state's
+ * mousePressed method and checks if the left mouse button (button 0) was pressed. If so, it iterates through
+ * the StateButtons and checks if any button was pressed. If a button is pressed, it changes the current state
+ * to the target state of the button and plays the button's sound effect.
+ * 
+ * Basics of the state machine:
+ * - The state machine consists of different states (e.g., "chest", "crafting", "furnace").
+ * - Transitions between states occur based on user interactions with StateButton objects.
+ * - Each state can have its own behavior and actions.
+ * - The current state determines the system's behavior at any given time.
+ * 
+ * @param x The x-coordinate of the mouse cursor.
+ * @param y The y-coordinate of the mouse cursor.
+ * @param button The mouse button that was pressed (0 for left button, 2 for right button).
+ */
 void ofApp::mousePressed(int x, int y, int button) {
     currentState->mousePressed(x,y,button);
     if (button == 0) {
+        // Iterate through StateButtons
         for (auto stateButton : player->getStateButtons()) {
             if (stateButton.onPress(x,y)) {
                 if (stateButton.getTargetState() == "chest") {
@@ -48,37 +49,25 @@ void ofApp::mousePressed(int x, int y, int button) {
         }
     }
 }
+void ofApp::update() { currentState->update();}
+void ofApp::draw() { currentState->draw();}
+void ofApp::mouseMoved(int x, int y) { currentState->mouseMoved(x,y); }
+void ofApp::keyPressed(int key) { currentState->keyPressed(key); }
 
+// Helper function that gives the player, or the chest, items.
 void ofApp::giveItems() {
-    player->addItem(instantiator->getItemFromNumber(1),64);
-    player->addItem(instantiator->getItemFromNumber(13),9);
-    player->addItem(instantiator->getItemFromNumber(14),9);
-    player->addItem(instantiator->getItemFromNumber(15),9);
-    
-
-    chestState->addItem(instantiator->getItemFromNumber(1),1);
-    chestState->addItem(instantiator->getItemFromNumber(1),1);
-}
-//--------------------------------------------------------------
-void ofApp::keyPressed(int key) {
-    currentState->keyPressed(key);
+    for (int i =0; i < 19; i++) { player->addItem(instantiator->getItemFromNumber(i),64); }
+    for (int i = 27; i < 37; i ++) { chestState->addItem(instantiator->getItemFromNumber(i),64); }
 }
 
 
-//--------------------------------------------------------------
+
+//------------------UNUSED--------------------------------------
 void ofApp::keyReleased(int key) {}
-//--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button) {}
-//--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button) {}
-//--------------------------------------------------------------
 void ofApp::mouseEntered(int x, int y) {}
-//--------------------------------------------------------------
 void ofApp::mouseExited(int x, int y) {}
-//--------------------------------------------------------------
 void ofApp::windowResized(int w, int h) {}
-//--------------------------------------------------------------
 void ofApp::gotMessage(ofMessage msg) {}
-//--------------------------------------------------------------
 void ofApp::dragEvent(ofDragInfo dragInfo) {}
-//--------------------------------------------------------------

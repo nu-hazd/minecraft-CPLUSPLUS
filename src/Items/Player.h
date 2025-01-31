@@ -6,16 +6,16 @@
 
 class Player {
     private:
-        ItemContainer cursor;
-        vector<ItemContainer> inventory;
+        ItemContainer cursorContainer; // Container that follows the mouse
+        vector<ItemContainer> inventory; // An array of 27 ItemContainers
         vector<StateButton> buttons;
-        string targetState;
     public:
         Player() {
-            this->cursor = ItemContainer(0, 0);
+            this->cursorContainer = ItemContainer(0, 0);
             /*
-                An inventory is a collection of ItemContainers. 
-                There are 27 slots (9x3). The offset between each slot is 12 pixels.
+                An inventory is an array of lenght 9 of ItemContainers. 
+                There are 27 slots (9x3) within the players inventory.
+                The offset between each slot is 12 pixels.
                 We start at the top left coordinate of the inventory and create each
                 container, adding them to the vector with their respective coordinates.
                 The starting coordinates are: (32, 340)
@@ -47,14 +47,14 @@ class Player {
         }
 
 
-        ItemContainer& getCursorContainer() { return this->cursor; }
+        ItemContainer& getCursorContainer() { return this->cursorContainer; }
         vector<ItemContainer>& getInventory() { return this->inventory; }
         vector<StateButton>& getStateButtons() { return this->buttons; }
 
         void draw() {
             for (auto button : buttons) { button.draw();}
             for (auto slot : inventory) {slot.draw();}
-            this->cursor.draw();
+            this->cursorContainer.draw();
         }
         void addItem(Item itm, int count) {
             int i = 0;
