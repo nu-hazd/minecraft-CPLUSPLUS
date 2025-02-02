@@ -348,7 +348,82 @@ pair<Item, int> CraftingState::getItemFromRecipie(vector<int> grid) {
             result.first = instantiator->getItemFromNumber(29);
             result.second = 1;
         }
-        return result;       
+        // Phase 2: Fix beacon recipie
+        if (grid == vector<int> // Beacon
+                {40, 40, 40,
+                40, 37, 40,
+                41, 41, 41}
+            ) {
+            result.first = instantiator->getItemFromNumber(42);
+            result.second = 1;
+        }
+        if (grid == vector<int> // Eye of ender
+                {49, 48, 0,
+                0, 0, 0,
+                0, 0, 0}
+            ) {
+            result.first = instantiator->getItemFromNumber(50);
+            result.second = 1;
+        }
+        if (grid == vector<int> // Bread
+                {51, 51, 51,
+                0, 0, 0,
+                0, 0, 0}
+            ) {
+            result.first = instantiator->getItemFromNumber(52);
+            result.second = 3;
+        }
+        if (grid == vector<int> // Golden apple
+                {35, 35, 35,
+                35, 54, 35,
+                35, 35, 35}
+            ) {
+            result.first = instantiator->getItemFromNumber(56);
+            result.second = 1;
+        }
+        // PHASE 3: Add ender tools recipies
+        if (grid == vector<int> // Ender pickaxe
+                {50, 50, 50,
+                50, 8, 50,
+                50, 42, 50}
+            ) {
+            result.first = instantiator->getItemFromNumber(57);
+            result.second = 1;
+        }
+        if (grid == vector<int> // Ender shovel
+                {50, 50, 50,
+                50, 13, 50,
+                50, 42, 50}
+            ) {
+            result.first = instantiator->getItemFromNumber(60);
+            result.second = 1;
+        }
+        if (grid == vector<int> // Ender sword
+                {50, 50, 50,
+                50, 18, 50,
+                50, 42, 50}
+            ) {
+            result.first = instantiator->getItemFromNumber(58);
+            result.second = 1;
+        }
+        if (grid == vector<int> // Ender axe
+                {50, 50, 50,
+                50, 23, 50,
+                50, 42, 50}
+            ) {
+            result.first = instantiator->getItemFromNumber(59);
+            result.second = 1;
+        }
+        if (grid == vector<int> // Ender hoe
+                {50, 50, 50,
+                50, 28, 50,
+                50, 42, 50}
+            ) {
+            result.first = instantiator->getItemFromNumber(61);
+            result.second = 1;
+        }
+        
+        return result;    
 }
 
 

@@ -27,6 +27,7 @@ class ItemContainer {
         bool isEmpty() { return this->currentItem.getItemNumber() == 0;}
         bool isMaxed() { return this->getItemCount() == this->getCurrentItem().getMaxStack(); }
         bool isMaxedAfter(int amount) { return this->getItemCount() + amount > this->getCurrentItem().getMaxStack(); }
+        bool isTool() { return this->currentItem.getMaxStack() == 1; } // Simplistic checker. Disables the ability to add items that have a max stack of 1 that aren't tools. 
         Item getCurrentItem() { return this->currentItem; }
         
         // Setters and useful methods

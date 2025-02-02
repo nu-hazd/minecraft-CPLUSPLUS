@@ -1,7 +1,6 @@
 obj
-bin/data/images/generated_map.png
 bin/fmod.dll
-bin/ZeldaCPP.exe
+bin/minecraft.exe
 
 #For any Mac Users:
 bin/INSERT_NAME_PROJECT_HERE.app/

@@ -1,8 +1,8 @@
 #include "FurnaceState.h"
 
-FurnaceState::FurnaceState(Player* player, ItemHandler* instantce) : State(player) {
+FurnaceState::FurnaceState(Player* player, ItemHandler* instantiatr) : State(player) {
     this->fuel = 0;
-    this->instantiator = instantce;
+    this->instantiator = instantiatr;
     this->background.load("images/states/furnace.png");
     this->fuelContainer = ItemContainer(224, 212); // These coordinate values were obtained via PaintMS.
     this->burningContainer = ItemContainer(224, 68);
@@ -55,6 +55,7 @@ void FurnaceState::smelt() {
  * @return true if the furnace can smelt the current item, false otherwise.
  */
 bool FurnaceState::canSmelt() {
+    // PHASE TWO: Check if the furnace can smelt the current item
     if (burningContainer.isEmpty()) return false;
     if (resultContainer.isMaxedAfter(1)) return false;
     if (fuel == 0 && fuelContainer.isEmpty()) return false; 
@@ -101,8 +102,9 @@ void FurnaceState::mousePressed(int x, int y, int button) {
 };
 
 void FurnaceState::addSmeltableItems() {
+    // PHASE TWO: Add smeltable items to the furnace
     this->smeltableItems = 
-    {2,31,32};
+    {2,31,32,38,43,45,53};
 }
 
 int FurnaceState::getResultantItemNumber(Item itm) {
@@ -122,6 +124,14 @@ int FurnaceState::getResultantItemNumber(Item itm) {
             return 35;
         case 32:
             return 34;
+        case 38:
+            return 40;
+        case 43:
+            return 44;
+        case 45:
+            return 46;
+        case 53:
+            return 54;
         default:
             return 0;
     }

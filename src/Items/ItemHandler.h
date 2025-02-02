@@ -3,19 +3,17 @@
 
 /*
     Instantiator class that will facilitate item creation.
-    Holds an array of all possibles items.
+    Holds the array of all possibles items.
 */
 class ItemHandler {
     private:
         ofImage sheet;
-        const int SPRITE_WIDTH = 64;
-        const int SPRITE_HEIGHT = 64;
         vector<Item> itemList;
     public:
-        // Helper function that returns the sprite given its zero index coordinate on sprites.png
+        // Helper function that returns the sprite given its row and col coordinates on sprites.png
         ofImage getSpriteFromSheet(int col, int row) {
             ofImage sprite;
-            sprite.cropFrom(sheet,col*SPRITE_WIDTH,row*SPRITE_HEIGHT,SPRITE_WIDTH,SPRITE_HEIGHT);
+            sprite.cropFrom(sheet,col*64,row*64,64,64);
             return sprite;
     }
         // Returns the item at index itemNum. itemList items must be added in order, or this function will not work.                   
@@ -28,7 +26,7 @@ class ItemHandler {
             sheet.load("C:/Users/Public/of_v20240930_msys2_mingw64_release/apps/myApps/minecraft/bin/data/images/sprites/sprites.png");
             itemList.push_back(Item(0   , 1, 0, getSpriteFromSheet(0,0), "air"));
 
-            itemList.push_back(Item(1   , 64, 0, getSpriteFromSheet(1,0), "Grass"));
+            itemList.push_back(Item(1   , 64, 0, getSpriteFromSheet(2,0), "Dirt"));
             itemList.push_back(Item(2   , 64, 4, getSpriteFromSheet(15,0), "Log"));
             itemList.push_back(Item(3   , 64, 1, getSpriteFromSheet(4,0), "Plank"));
             itemList.push_back(Item(4   , 64, 1, getSpriteFromSheet(8,13), "Sticks"));
@@ -66,6 +64,37 @@ class ItemHandler {
             itemList.push_back(Item(34  , 64, 0, getSpriteFromSheet(1,12), "Iron Ingot"));
             itemList.push_back(Item(35  , 64, 0, getSpriteFromSheet(17,12), "Gold Ingot"));
             itemList.push_back(Item(36  , 64, 0, getSpriteFromSheet(10,13), "Diamond"));
+            itemList.push_back(Item(37  , 64, 0, getSpriteFromSheet(1,19), "Nether Star"));
+            itemList.push_back(Item(38  , 64, 0, getSpriteFromSheet(10,0), "Sand")); 
+            itemList.push_back(Item(39  , 64, 0, getSpriteFromSheet(11,0), "Gravel"));
+            itemList.push_back(Item(40  , 64, 0, getSpriteFromSheet(1,1), "Glass")); 
+            itemList.push_back(Item(41  , 64, 0, getSpriteFromSheet(12,2), "Obsidian"));
+            itemList.push_back(Item(42  , 64, 0, getSpriteFromSheet(21,4), "Beacon")); 
+
+            itemList.push_back(Item(43  , 64, 0, getSpriteFromSheet(7,16), "Raw Chicken")); 
+            itemList.push_back(Item(44  , 64, 0, getSpriteFromSheet(8,16), "Cooked Chicken")); 
+            itemList.push_back(Item(45  , 64, 0, getSpriteFromSheet(14,15), "Raw Beef"));  
+            itemList.push_back(Item(46  , 64, 0, getSpriteFromSheet(15,15), "Steak")); 
+            itemList.push_back(Item(47  , 64, 0, getSpriteFromSheet(0,15), "Rotten Flesh"));
+            itemList.push_back(Item(48  , 64, 4, getSpriteFromSheet(20,17), "Blaze Powder")); 
+            itemList.push_back(Item(49  , 16, 0, getSpriteFromSheet(16,15), "Ender Pearls"));
+            itemList.push_back(Item(50  , 16, 0, getSpriteFromSheet(18,17 ), "Eye of Ender")); 
+            
+            itemList.push_back(Item(51  , 64, 0, getSpriteFromSheet(3,12), "Wheat"));
+            itemList.push_back(Item(52  , 64, 0, getSpriteFromSheet(19,12), "Bread")); 
+            itemList.push_back(Item(53  , 64, 0, getSpriteFromSheet(5,16), "Potato"));  
+            itemList.push_back(Item(54  , 64, 0, getSpriteFromSheet(4,16), "Cooked potato")); 
+            itemList.push_back(Item(55  , 64, 0, getSpriteFromSheet(11,11), "Apple"));  
+            itemList.push_back(Item(56  , 64, 0, getSpriteFromSheet(12,11), "Golden Apple")); 
+
+            // PHASE 3: Add ender tools, must also add the sprites to the sprites.png
+            itemList.push_back(Item(57  , 1, 1, getSpriteFromSheet(0,10), "Ender Pickaxe"));
+            itemList.push_back(Item(58  , 1, 0, getSpriteFromSheet(1,10), "Ender Sword"));
+            itemList.push_back(Item(59  , 1, 0, getSpriteFromSheet(2,10), "Ender Axe"));
+            itemList.push_back(Item(60  , 1, 0, getSpriteFromSheet(3,10), "Ender Shovel"));
+            itemList.push_back(Item(61  , 1, 0, getSpriteFromSheet(4,10), "Ender Hoe"));
+
+
 
         }    
 };      

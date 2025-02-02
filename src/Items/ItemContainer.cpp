@@ -87,11 +87,13 @@ void ItemContainer::rightSwapWith(ItemContainer& playerContainer) {
 }
 void ItemContainer::draw() {
     if (isMouseHovering()) { 
-        // Draw the 
         this->hoverHighlighter.draw(this->collider.getMinX(),this->collider.getMinY());
+        // PHASE ONE: Add item name display
         if (this->getCurrentItem().getItemNumber() != 0) { ofDrawBitmapStringHighlight(this->currentItem.getName(), this->collider.getMinX(), this->collider.getMinY()-10,ofColor::darkBlue);}
     }
-    this->currentItem.getSprite().draw(this->collider.getMinX(),this->collider.getMinY(),1);
+    // PHASE ONE: Add item sprite display
+    this->currentItem.getSprite().draw(this->collider.getX(),this->collider.getY());
+    // PHASE ONE: Add item count display only if its more than one. 
     if (this->currentItemCount >= 10) { ofDrawBitmapString(this->currentItemCount,(this->collider.getMinX())+48,(this->collider.getMinY()+62));}
     else if (this->currentItemCount > 1) { ofDrawBitmapString(this->currentItemCount,(this->collider.getMinX())+56,(this->collider.getMinY()+62));}
 }
