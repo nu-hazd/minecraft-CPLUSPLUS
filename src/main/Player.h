@@ -37,9 +37,12 @@ class Player {
             const int DISTANCE_BETWEEN_BUTTONS = 6;
             const int SIZE_X = 80;
             StateButton chestStateButton{"chest", HORZ_ALIGN + (0*DISTANCE_BETWEEN_BUTTONS) + (0 * SIZE_X),VERT_ALIGN};
+            // PHASE ONE: Change craft to crafting in order for the button to work
             StateButton craftingStateButton{"crafting", HORZ_ALIGN + (1*DISTANCE_BETWEEN_BUTTONS) + (1 * SIZE_X),VERT_ALIGN};
             StateButton furnaceStateButton{"furnace", HORZ_ALIGN + (2*DISTANCE_BETWEEN_BUTTONS) + (2 * SIZE_X),VERT_ALIGN};
-
+            StateButton generatorStateButton{"generator", HORZ_ALIGN + (3*DISTANCE_BETWEEN_BUTTONS) + (3 * SIZE_X),VERT_ALIGN};
+            
+            this->buttons.push_back(generatorStateButton);
             this->buttons.push_back(chestStateButton);
             this->buttons.push_back(craftingStateButton);
             this->buttons.push_back(furnaceStateButton);

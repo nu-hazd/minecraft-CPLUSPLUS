@@ -63,14 +63,6 @@ void ofApp::giveItems() {
     // PHASE TWO: Add wooden tools to the chest
     vector<int> items = {5, 10, 15, 20, 25};
     for (auto woodenTool : items) { chestState->addItem(instantiator->getItemFromNumber(woodenTool),1); }
-    player->addItem(instantiator->getItemFromNumber(8),1);
-    player->addItem(instantiator->getItemFromNumber(13),1);
-    player->addItem(instantiator->getItemFromNumber(18),1);
-    player->addItem(instantiator->getItemFromNumber(23),1);
-    player->addItem(instantiator->getItemFromNumber(28),1);
-    player->addItem(instantiator->getItemFromNumber(42),64);
-    player->addItem(instantiator->getItemFromNumber(50),64);
-    
 }
 
 
