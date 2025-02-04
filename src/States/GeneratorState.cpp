@@ -45,7 +45,7 @@ void GeneratorState::generateItem() {
     else if (toolName.find("Gold") != string::npos) toolTier = 2;
     else if (toolName.find("Iron") != string::npos) toolTier = 5;
     else if (toolName.find("Stone") != string::npos) toolTier = 8;
-    else if (toolName.find("Wodden") != string::npos) toolTier = lootTables[lootTableNumber].size();
+    else if (toolName.find("Wooden") != string::npos) toolTier = lootTables[lootTableNumber].size();
     /**
      * rand()%lootTables[lootTableNumber].size() will return a random index inside the selected loot table
      * Note that the rarest items of the loot table are always near or at the end of the array
