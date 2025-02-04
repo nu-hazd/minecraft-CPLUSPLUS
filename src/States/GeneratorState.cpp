@@ -38,7 +38,7 @@ void GeneratorState::generateItem() {
     else if (toolName.find("Hoe") != string::npos) lootTableNumber = 4;
 
     // Select the tool's tier. The closer the value is to zero, the better the tool
-    double toolTier = 1;
+    double toolTier = 100;
     // PHASE 3: Make ender tools the best
     if (toolName.find("Ender") != string::npos) toolTier = 1.01;
     else if (toolName.find("Diamond") != string::npos) toolTier = 1.5; 
