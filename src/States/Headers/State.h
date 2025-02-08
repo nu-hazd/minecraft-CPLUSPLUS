@@ -4,31 +4,62 @@
 #include "ItemContainer.h"
 #include "Player.h"
 
+/**
+ * @class State
+ * @brief Abstract base class representing a game state.
+ */
 class State {
     private:
-        Player* player;
+        Player* player; ///< Pointer to the player object.
     public:
-        // State background sprites should be 704x668 pixels
-        ofImage background;
-        // Save the player pointer. It will be used within each State's logic
-        State(Player* plyr){ this->player = plyr;};
-        // Since player is private, we need a getter to access the attribute
+        ofImage background; ///< Background image for the state.
+
+        /**
+         * @brief Constructs a State object.
+         * @param plyr Pointer to the player object.
+         */
+        State(Player* plyr) { this->player = plyr; }
+
+        /**
+         * @brief Gets the player object.
+         * @return Pointer to the player object.
+         */
         Player* getPlayer() { return this->player; }
 
-        // Update, draw and keyPressed functions will be exclusively defined within each state 
+        /**
+         * @brief Updates the state. Pure virtual function to be implemented by derived classes.
+         */
         virtual void update() = 0;
-        virtual void draw() = 0;
-        virtual void keyPressed(int ket) = 0;
-        // Each time the mouse is moved, this function is called. x and y are the mouse coordinates
-        virtual void mouseMoved(int x, int y) { 
-            for (auto& slot : this->getPlayer()->getInventory()) { slot.mouseEntered(x,y); }
-            player->getCursorContainer().setPos(x-32,y-32);
-        };
-        // button = 0 when left mouse is clicked, button = 2 when right mouse is clicked. x and y are the mouse coordinates
-        virtual void mousePressed(int x, int y, int button) {
-            if (button == 0) for (auto& slot : player->getInventory()) { slot.leftMouseClicked(x,y,player->getCursorContainer()); }
-            if (button == 2) for (auto& slot : player->getInventory()) {slot.rightMouseClicked(x,y,player->getCursorContainer()); }
-        }
-       
 
+        /**
+         * @brief Draws the state. Pure virtual function to be implemented by derived classes.
+         */
+        virtual void draw() = 0;
+
+        /**
+         * @brief Handles key press events. Pure virtual function to be implemented by derived classes.
+         * @param key Key pressed.
+         */
+        virtual void keyPressed(int key) = 0;
+
+        /**
+         * @brief Handles mouse movement events.
+         * @param x Horizontal coordinate of the mouse.
+         * @param y Vertical coordinate of the mouse.
+         */
+        virtual void mouseMoved(int x, int y) {
+            for (auto& slot : this->getPlayer()->getInventory()) { slot.mouseEntered(x, y); }
+            player->getCursorContainer().setPos(x - 32, y - 32);
+        }
+
+        /**
+         * @brief Handles mouse press events.
+         * @param x Horizontal coordinate of the mouse.
+         * @param y Vertical coordinate of the mouse.
+         * @param button Mouse button pressed.
+         */
+        virtual void mousePressed(int x, int y, int button) {
+            if (button == 0) for (auto& slot : player->getInventory()) { slot.leftMouseClicked(x, y, player->getCursorContainer()); }
+            if (button == 2) for (auto& slot : player->getInventory()) { slot.rightMouseClicked(x, y, player->getCursorContainer()); }
+        }
 };

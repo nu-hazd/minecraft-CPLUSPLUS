@@ -6,7 +6,7 @@ class ChestState : public State {
         vector<ItemContainer> chestInventory;   // An array of 27 ItemContainers
     public:
         /** 
-         *  Constructs a ChestState object with a player pointer.
+         *  @brief Constructs a ChestState object with a player pointer.
          *  @param player Player pointer.
         */
         ChestState(Player* player);

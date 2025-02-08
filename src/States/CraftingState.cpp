@@ -371,7 +371,7 @@ pair<Item, int> CraftingState::getItemFromRecipie(vector<int> grid) {
                 0, 0, 0}
             ) {
             result.first = instantiator->getItemFromNumber(52);
-            result.second = 3;
+            result.second = 1;
         }
         if (grid == vector<int> // Golden apple
                 {35, 35, 35,

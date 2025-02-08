@@ -15,9 +15,9 @@ ItemContainer::ItemContainer(int pX, int pY) {
 // Inventory = target container
 
 void ItemContainer::leftSwapWith(ItemContainer& playerContainer) {
-    //  The two interacting containers are empty. Do nothing.
+    // The two interacting containers are empty. Do nothing.
     if (this->isEmpty() && playerContainer.isEmpty()) return;
-    //  The items are the same, add them.
+    // The items are the same, add them.
     if ((this->getCurrentItem() == playerContainer.getCurrentItem())) {
             // One of the containers is maxed. Swap the counts.
             if (this->isMaxed() || playerContainer.isMaxed()) {
@@ -26,7 +26,7 @@ void ItemContainer::leftSwapWith(ItemContainer& playerContainer) {
                 // Swap them.
                 this->setItemCount(playerContainer.getItemCount());
                 playerContainer.setItemCount(refCount);
-            }else {
+            } else {
                 // Add player's item count to the inventory container's count 
                 int newItemCount = playerContainer.getItemCount() + this->getItemCount();
                 // If it exceeds the stack limit, give the player container the rest.
@@ -35,7 +35,7 @@ void ItemContainer::leftSwapWith(ItemContainer& playerContainer) {
                     newItemCount = this->getCurrentItem().getMaxStack();
                     this->setItemCount(newItemCount);
                     playerContainer.setItemCount(residue);
-                }else {
+                } else {
                     this->setItemCount(newItemCount);
                     playerContainer.empty();
                 }
@@ -43,7 +43,7 @@ void ItemContainer::leftSwapWith(ItemContainer& playerContainer) {
     }
     // The items are different, swap the contents of the containers.
     else {
-        // Store an item and count reference refence.
+        // Store an item and count reference.
         Item itmRef = this->getCurrentItem();
         int countRef = this->getItemCount();
         // Swap both values.
@@ -61,12 +61,12 @@ void ItemContainer::rightSwapWith(ItemContainer& playerContainer) {
         if (this->getItemCount() == 1) rightSwapWith(playerContainer);
         // It's more than one, pick up half of the items.
         else {
-            int half = this->getItemCount()/2;
-            this->setItemCount(this->getItemCount()-half);
+            int half = this->getItemCount() / 2;
+            this->setItemCount(this->getItemCount() - half);
             playerContainer.setItemCount(half);
             playerContainer.setCurrentItem(this->getCurrentItem());
         }
-    }else {
+    } else {
         // If the inventory container is empty, place one item.
         if (this->isEmpty()) {
             this->setItemCount(1);
@@ -76,7 +76,7 @@ void ItemContainer::rightSwapWith(ItemContainer& playerContainer) {
         }
         // If the target container has the same item as the player container, add one to it.
         else if (this->getCurrentItem() == playerContainer.getCurrentItem()) {
-            // Check if adding one doesn't exceeds the items max stack size.
+            // Check if adding one doesn't exceed the item's max stack size.
             if (!this->isMaxedAfter(1)) {
                 this->setItemCount(this->getItemCount() + 1);
                 // Deduct one from the player container. 
@@ -87,13 +87,18 @@ void ItemContainer::rightSwapWith(ItemContainer& playerContainer) {
 }
 void ItemContainer::draw() {
     if (isMouseHovering()) { 
-        this->hoverHighlighter.draw(this->collider.getMinX(),this->collider.getMinY());
+        this->hoverHighlighter.draw(this->collider.getMinX(), this->collider.getMinY());
         // PHASE ONE: Add item name display
-        if (this->getCurrentItem().getItemNumber() != 0) { ofDrawBitmapStringHighlight(this->currentItem.getName(), this->collider.getMinX(), this->collider.getMinY()-10,ofColor::darkBlue);}
+        if (this->getCurrentItem().getItemNumber() != 0) { 
+            ofDrawBitmapStringHighlight(this->currentItem.getName(), this->collider.getMinX(), this->collider.getMinY() - 10, ofColor::darkBlue);
+        }
     }
     // PHASE ONE: Add item sprite display
-    this->currentItem.getSprite().draw(this->collider.getX(),this->collider.getY());
-    // PHASE ONE: Add item count display only if its more than one. 
-    if (this->currentItemCount >= 10) { ofDrawBitmapString(this->currentItemCount,(this->collider.getMinX())+48,(this->collider.getMinY()+62));}
-    else if (this->currentItemCount > 1) { ofDrawBitmapString(this->currentItemCount,(this->collider.getMinX())+56,(this->collider.getMinY()+62));}
+    this->currentItem.getSprite().draw(this->collider.getX(), this->collider.getY());
+    // PHASE ONE: Add item count display only if it's more than one. 
+    if (this->currentItemCount >= 10) { 
+        ofDrawBitmapString(this->currentItemCount, (this->collider.getMinX()) + 48, (this->collider.getMinY() + 62));
+    } else if (this->currentItemCount > 1) { 
+        ofDrawBitmapString(this->currentItemCount, (this->collider.getMinX()) + 56, (this->collider.getMinY() + 62));
+    }
 }

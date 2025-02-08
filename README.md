@@ -29,7 +29,7 @@ I added a //PHASE # comment alongside the solutions so CRTL+F all the way!
 SUGGESTED SPECS:
 
 PHASE ONE:
--Draw the items sprite from within itemhandler's draw() method.
+-Draw the items sprite from within itemContainer's draw() method.
 -Add the item count. Only display said count if there is more than one item inside the container.
 -Add the item display name ONLY when it is being hovered over. Make the display be highlighted for better contrast. ofDrawBitmapStringHighlight()
 -Fix the state buttons vertical alignment and fix the crafting table button.
