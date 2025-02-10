@@ -50,7 +50,7 @@ class Item {
             this->maxStack = 1;
             this->fuelLevel = 0;
             ofImage airSpr;
-            airSpr.load("C:/Users/Public/of_v20240930_msys2_mingw64_release/apps/myApps/minecraft/bin/data/images/sprites/sprites.png");
+            airSpr.load("images/sprites/sprites.png");
             airSpr.crop(0, 0, 64, 64);
             this->sprite = airSpr;
             this->name = "air";
