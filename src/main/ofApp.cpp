@@ -8,6 +8,9 @@ void ofApp::setup() {
     this->furnaceState = new FurnaceState(player,instantiator);
     this->generatorState= new GeneratorState(player,instantiator);
 
+    this->relaxingMusic.load("audio/miceOnVenus.mp3");
+    this->relaxingMusic.play();
+
     giveItems();
     this->currentState = chestState;
 }

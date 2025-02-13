@@ -22,6 +22,7 @@ class ofApp : public ofBaseApp {
         FurnaceState* furnaceState; ///< Pointer to the furnace state.
         GeneratorState* generatorState; ///< Pointer to the generator state.
 
+        ofSoundPlayer relaxingMusic; ///< Sound player for background music.
         /**
          * @brief Sets up the application.
          */

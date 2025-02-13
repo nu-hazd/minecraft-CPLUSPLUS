@@ -1,6 +1,7 @@
 obj
 bin/fmod.dll
-bin/minecraft.exe
+bin/minecraft-CPLUSPLUS.exe
+bin/minecraft-CPLUSPLUS.exe
 
 #For any Mac Users:
 bin/INSERT_NAME_PROJECT_HERE.app/

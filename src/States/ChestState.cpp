@@ -1,7 +1,7 @@
 #include "ChestState.h"
 
 ChestState::ChestState(Player* player) : State(player) {
-    this->background.load("C:/Users/Public/of_v20240930_msys2_mingw64_release/apps/myApps/minecraft/bin/data/images/states/chest.png");
+    this->background.load("images/states/chest.png");
     // Create the chest inventory, which is an ItemContainer array of 27.
     const int VERTICAL_OFFSET = 72;
     const int HORIZONTAL_OFFSET = 32;

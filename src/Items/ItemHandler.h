@@ -23,7 +23,7 @@ class ItemHandler {
     }
         // Within the constrcutor, all possible items must be created and added to the list
         ItemHandler() {
-            sheet.load("C:/Users/Public/of_v20240930_msys2_mingw64_release/apps/myApps/minecraft/bin/data/images/sprites/sprites.png");
+            sheet.load("images/sprites/sprites.png");
             itemList.push_back(Item(0   , 1, 0, getSpriteFromSheet(0,0), "air"));
 
             itemList.push_back(Item(1   , 64, 0, getSpriteFromSheet(2,0), "Dirt"));
